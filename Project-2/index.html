@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">Notes<span class="dot">.</span></div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <span class="knob" id="themeKnob">☀</span>
+      </button>
+    </div>
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Search notes…" />
+    </div>
+    <button class="new-note-btn" id="newNoteBtn">
+      <span class="plus">+</span> New note
+    </button>
+    <div class="note-list" id="noteList"></div>
+  </aside>
+
+  <main class="editor" id="editorPane">
+    <div id="editorContent"></div>
+  </main>
+</div>
+
+<script>
+    
+(function () {
+  var STORAGE_KEY = 'notes:all';
+  var notes = [];
+  var activeId = null;
+  var saveTimer = null;
+
+  var noteListEl = document.getElementById('noteList');
+  var editorPane = document.getElementById('editorPane');
+  var editorContent = document.getElementById('editorContent');
+  var searchInput = document.getElementById('searchInput');
+  var newNoteBtn = document.getElementById('newNoteBtn');
+  var themeToggle = document.getElementById('themeToggle');
+  var themeKnob = document.getElementById('themeKnob');
+
+  var appEl = document.querySelector('.app');
+
+  function showEditorOnMobile() {
+    appEl.classList.add('show-editor');
+  }
+
+  function showListOnMobile() {
+    appEl.classList.remove('show-editor');
+  }
+
+  function uid() {
+    return 'n_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+  }
+
+  /* ---------- Storage shim ----------
+     Uses window.storage when available (Claude.ai artifacts).
+     Falls back to localStorage when running as a standalone file.
+     Falls back to an in-memory object if neither works (e.g. private
+     browsing with storage disabled), so the app never hard-fails. */
+  var memoryStore = {};
+  var hasWindowStorage = (typeof window.storage !== 'undefined' && window.storage !== null);
+  var hasLocalStorage = (function () {
+    try {
+      var t = '__notes_test__';
+      window.localStorage.setItem(t, '1');
+      window.localStorage.removeItem(t);
+      return true;
+    } catch (e) { return false; }
+  })();
+
+  var store = {
+    get: function (key) {
+      if (hasWindowStorage) {
+        return window.storage.get(key, false).then(function (res) {
+          return res ? res.value : null;
+        }).catch(function () { return null; });
+      }
+      if (hasLocalStorage) {
+        return Promise.resolve(window.localStorage.getItem(key));
+      }
+      return Promise.resolve(Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null);
+    },
+    set: function (key, value) {
+      if (hasWindowStorage) {
+        return window.storage.set(key, value, false).catch(function (err) {
+          console.error('window.storage.set failed, falling back', err);
+          hasWindowStorage = false;
+          return store.set(key, value);
+        });
+      }
+      if (hasLocalStorage) {
+        try {
+          window.localStorage.setItem(key, value);
+          return Promise.resolve(true);
+        } catch (e) {
+          console.error('localStorage.setItem failed', e);
+          return Promise.resolve(false);
+        }
+      }
+      memoryStore[key] = value;
+      return Promise.resolve(true);
+    }
+  };
+
+  function formatDate(ts) {
+    var d = new Date(ts);
+    var now = new Date();
+    var sameDay = d.toDateString() === now.toDateString();
+    if (sameDay) {
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
+  function snippet(body) {
+    var s = (body || '').trim().replace(/\s+/g, ' ');
+    return s.length > 70 ? s.slice(0, 70) + '…' : (s || 'No additional text');
+  }
+
+  /* ---------- Persistence ---------- */
+  function loadNotes() {
+    store.get(STORAGE_KEY).then(function (value) {
+      if (value) {
+        try { notes = JSON.parse(value); } catch (e) { notes = []; }
+      } else {
+        notes = [];
+      }
+      notes.sort(function (a, b) { return b.updatedAt - a.updatedAt; });
+      if (notes.length > 0) {
+        activeId = notes[0].id;
+      }
+      renderList();
+      renderEditor();
+    }).catch(function (err) {
+      console.error('Failed to load notes', err);
+      notes = [];
+      renderList();
+      renderEditor();
+    });
+  }
+
+  function persistNotes(showStatus) {
+    store.set(STORAGE_KEY, JSON.stringify(notes)).then(function (result) {
+      if (!result) { console.error('Save failed'); return; }
+      if (showStatus) flashSaved();
+    }).catch(function (err) {
+      console.error('Storage error', err);
+    });
+  }
+
+  function flashSaved() {
+    var statusEl = document.getElementById('saveStatus');
+    if (!statusEl) return;
+    statusEl.classList.add('saved');
+    statusEl.querySelector('span.label').textContent = 'Saved';
+    clearTimeout(statusEl._t);
+    statusEl._t = setTimeout(function () {
+      statusEl.classList.remove('saved');
+      statusEl.querySelector('span.label').textContent = 'Idle';
+    }, 1400);
+  }
+
+  /* ---------- CRUD ---------- */
+  function createNote() {
+    var note = {
+      id: uid(),
+      title: '',
+      body: '',
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    };
+    notes.unshift(note);
+    activeId = note.id;
+    renderList();
+    renderEditor();
+    showEditorOnMobile();
+    try {
+      persistNotes(false);
+    } catch (e) {
+      console.error('Could not persist new note', e);
+    }
+    setTimeout(function () {
+      var titleEl = document.getElementById('titleInput');
+      if (titleEl) titleEl.focus();
+    }, 30);
+  }
+
+  function deleteNote(id) {
+    notes = notes.filter(function (n) { return n.id !== id; });
+    if (activeId === id) {
+      activeId = notes.length > 0 ? notes[0].id : null;
+    }
+    persistNotes(false);
+    renderList();
+    renderEditor();
+  }
+
+  function updateActiveNote(field, value) {
+    var note = notes.find(function (n) { return n.id === activeId; });
+    if (!note) return;
+    note[field] = value;
+    note.updatedAt = Date.now();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      notes.sort(function (a, b) { return b.updatedAt - a.updatedAt; });
+      persistNotes(true);
+      renderList();
+    }, 500);
+  }
+
+  /* ---------- Rendering ---------- */
+  function renderList() {
+    var query = (searchInput.value || '').toLowerCase().trim();
+    var filtered = notes.filter(function (n) {
+      if (!query) return true;
+      return (n.title || '').toLowerCase().indexOf(query) !== -1 ||
+             (n.body || '').toLowerCase().indexOf(query) !== -1;
+    });
+
+    if (notes.length === 0) {
+      noteListEl.innerHTML = '<div class="empty-list">No notes yet.<br>Tap "New note" to start writing.</div>';
+      return;
+    }
+    if (filtered.length === 0) {
+      noteListEl.innerHTML = '<div class="empty-list">No notes match your search.</div>';
+      return;
+    }
+
+    noteListEl.innerHTML = filtered.map(function (n) {
+      var isActive = n.id === activeId;
+      var title = n.title && n.title.trim() ? escapeHtml(n.title) : 'Untitled note';
+      return '<div class="note-card' + (isActive ? ' active' : '') + '" data-id="' + n.id + '">' +
+        '<p class="note-card-title">' + title + '</p>' +
+        '<p class="note-card-snippet">' + escapeHtml(snippet(n.body)) + '</p>' +
+        '<p class="note-card-meta">' + formatDate(n.updatedAt) + '</p>' +
+      '</div>';
+    }).join('');
+
+    Array.prototype.forEach.call(noteListEl.querySelectorAll('.note-card'), function (el) {
+      el.addEventListener('click', function () {
+        activeId = el.getAttribute('data-id');
+        renderList();
+        renderEditor();
+        showEditorOnMobile();
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderEditor() {
+    var note = notes.find(function (n) { return n.id === activeId; });
+
+    if (!note) {
+      editorContent.innerHTML =
+        '<div class="empty-editor">' +
+          '<div class="glyph">¶</div>' +
+          '<p>Select a note, or start a fresh page.</p>' +
+          '<button id="emptyNewBtn">+ New note</button>' +
+        '</div>';
+      var btn = document.getElementById('emptyNewBtn');
+      if (btn) btn.addEventListener('click', createNote);
+      return;
+    }
+
+    editorContent.innerHTML =
+      '<div class="editor-toolbar">' +
+        '<div style="display:flex; align-items:center; gap:10px;">' +
+          '<button class="mobile-back" id="backToList">&larr; Notes</button>' +
+          '<div class="save-status" id="saveStatus"><span class="pip"></span><span class="label">Idle</span></div>' +
+        '</div>' +
+        '<button class="delete-btn" id="deleteBtn">Delete note</button>' +
+      '</div>' +
+      '<div class="editor-body">' +
+        '<div class="editor-margin-rule"></div>' +
+        '<input type="text" class="title-input" id="titleInput" placeholder="Untitled note" value="' + escapeHtml(note.title || '') + '" />' +
+        '<textarea class="body-textarea" id="bodyTextarea" placeholder="Start writing…">' + escapeHtml(note.body || '') + '</textarea>' +
+      '</div>';
+
+    var backBtn = document.getElementById('backToList');
+    if (backBtn) backBtn.addEventListener('click', showListOnMobile);
+
+    document.getElementById('titleInput').addEventListener('input', function (e) {
+      updateActiveNote('title', e.target.value);
+      var card = noteListEl.querySelector('.note-card.active .note-card-title');
+      if (card) card.textContent = e.target.value.trim() || 'Untitled note';
+    });
+
+    document.getElementById('bodyTextarea').addEventListener('input', function (e) {
+      updateActiveNote('body', e.target.value);
+    });
+
+    document.getElementById('deleteBtn').addEventListener('click', function () {
+      if (confirm('Delete this note? This can\'t be undone.')) {
+        deleteNote(note.id);
+      }
+    });
+  }
+
+  /* ---------- Theme ---------- */
+  function applyTheme(isDark) {
+    document.documentElement.classList.toggle('dark', isDark);
+    themeKnob.textContent = isDark ? '☾' : '☀';
+    store.set('notes:theme', isDark ? 'dark' : 'light').catch(function () {});
+  }
+
+  themeToggle.addEventListener('click', function () {
+    var isDark = !document.documentElement.classList.contains('dark');
+    applyTheme(isDark);
+  });
+
+  function loadTheme() {
+    store.get('notes:theme').then(function (value) {
+      applyTheme(value === 'dark');
+    }).catch(function () {
+      applyTheme(false);
+    });
+  }
+
+  /* ---------- Events ---------- */
+  newNoteBtn.addEventListener('click', createNote);
+  searchInput.addEventListener('input', renderList);
+
+  loadTheme();
+  loadNotes();
+})();
+
+
+</script>
+</body>
+</html>
