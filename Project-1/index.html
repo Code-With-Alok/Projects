@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon.in</title>
+  <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+
+<header>
+  <div class="top">
+    <a class="logo" href="#" onclick="filter('all')">amazon<sup>.in</sup></a>
+    <div class="search">
+      <select id="catSel"><option value="all">All</option><option value="electronics">Electronics</option><option value="mens">Men's</option><option value="womens">Women's</option><option value="jewelry">Jewelry</option></select>
+      <input id="q" placeholder="Search products…" onkeydown="if(event.key==='Enter')search()">
+      <button onclick="search()">🔍</button>
+    </div>
+    <button class="cartbtn" onclick="toggleCart()">🛒 Cart <span id="cnt">0</span></button>
+  </div>
+  <nav>
+    <a onclick="filter('all')">All</a>
+    <a onclick="filter('electronics')">Electronics</a>
+    <a onclick="filter('mens')">Men's Clothing</a>
+    <a onclick="filter('womens')">Women's Clothing</a>
+    <a onclick="filter('jewelry')">Jewelry</a>
+    <a>Today's Deals</a><a>Prime</a><a>New Releases</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <h1>Big Savings. Every Day.</h1>
+  <p>Free delivery · Easy returns · Millions of products</p>
+  <div class="btns">
+    <button onclick="filter('electronics')">Shop Electronics</button>
+    <button class="out" onclick="filter('jewelry')">Explore Jewelry</button>
+  </div>
+</div>
+
+<div class="deals">
+  🔥 <b>Today's Deals:</b>
+  <span>Up to 52% off Electronics</span><span>Buy 2 Get 1 Free — Clothing</span>
+  <span>Jewelry from ₹499</span><span>Free delivery on ₹499+</span>
+</div>
+
+<main>
+  <div class="sec-head"><h2 id="title">All Products</h2><small id="cnt2"></small></div>
+  <div id="grid"></div>
+</main>
+
+<footer>
+  <div class="back" onclick="scrollTo(0,0)">▲ Back to top</div>
+  <div class="cols">
+    <div><h4>Get to Know Us</h4><a>About Amazon</a><a>Careers</a><a>Press Releases</a><a>Amazon Science</a></div>
+    <div><h4>Make Money with Us</h4><a>Sell on Amazon</a><a>Fulfillment by Amazon</a><a>Advertise Products</a><a>Global Selling</a></div>
+    <div><h4>Payment Products</h4><a>Amazon Business Card</a><a>Shop with Points</a><a>Reload Balance</a><a>Amazon Pay UPI</a></div>
+    <div><h4>Let Us Help You</h4><a>Your Account</a><a>Returns & Replacements</a><a>Shipping Rates</a><a>Help</a></div>
+  </div>
+  <hr>
+  <div class="fmid">
+    <div class="flogo">amazon<sup>.in</sup></div>
+    <div class="flags"><button>🇮🇳 India</button><button>🇺🇸 USA</button><button>🇬🇧 UK</button><button>🇩🇪 Germany</button></div>
+  </div>
+  <div class="fbot">
+    <a>Conditions of Use</a><a>Privacy Notice</a><a>Interest-Based Ads</a><a>Accessibility</a><br>
+    © 1996–2024, Amazon.com, Inc. or its affiliates
+  </div>
+</footer>
+
+<div id="ov" onclick="toggleCart()"></div>
+<aside id="cart">
+  <div class="ch"><h3>🛒 Shopping Cart</h3><button onclick="toggleCart()">✕</button></div>
+  <div id="citems"></div>
+  <div class="cf">
+    <div class="sub">Subtotal: <b id="tot">₹0</b></div>
+    <button onclick="checkout()">Proceed to Checkout →</button>
+  </div>
+</aside>
+<div id="toast"></div>
+
+<script src="Script.js"></script>
+</body>
+</html>
