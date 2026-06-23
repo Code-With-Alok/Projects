@@ -1,0 +1,379 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#eef5fb;
+    color:#222;
+}
+
+/* Header */
+
+header{
+    background:#002147;
+    color:white;
+    text-align:center;
+    padding:25px;
+}
+
+header h1{
+    font-size:32px;
+}
+
+header p{
+    margin-top:8px;
+    font-size:18px;
+}
+
+/* Hero Section */
+
+.hero{
+    text-align:center;
+    padding:60px 20px;
+    background:linear-gradient(
+        rgba(0,33,71,0.7),
+        rgba(0,33,71,0.7)
+    ),
+    url("https://images.unsplash.com/photo-1523050854058-8df90110c9f1")
+    center/cover;
+
+    color:white;
+}
+
+body{
+    background:
+    linear-gradient(
+        rgba(238,245,251,0.45),
+        rgba(238,245,251,0.45)
+    ),
+    url("https://static.boostmytalent.com/img/univ/abes-engineering-college-ghaziabad-campus-admission.webp");
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+}
+
+.hero h2{
+    font-size:36px;
+    margin-bottom:15px;
+}
+
+.hero p{
+    font-size:18px;
+}
+
+/* Form Section */
+
+.form-section{
+    width:85%;
+    max-width:650px;
+    margin:35px auto;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 0 15px rgba(0,0,0,0.15);
+}
+
+.form-section h2{
+    text-align:center;
+    margin-bottom:20px;
+    color:#002147;
+}
+
+form{
+    display:flex;
+    flex-direction:column;
+}
+
+input,
+select,
+textarea{
+    margin:10px 0;
+    padding:12px;
+    border:1px solid #bbb;
+    border-radius:8px;
+    font-size:15px;
+}
+
+textarea{
+    resize:none;
+    height:100px;
+}
+
+button{
+    background:#002147;
+    color:white;
+    border:none;
+    padding:12px;
+    cursor:pointer;
+    border-radius:8px;
+    font-size:15px;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#004080;
+}
+
+/* Statistics Section */
+
+.stats-section{
+    width:90%;
+    margin:25px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.stat-box{
+    background:white;
+    text-align:center;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 0 12px rgba(0,0,0,0.12);
+    border-top:5px solid #002147;
+}
+
+.stat-box h3{
+    font-size:35px;
+    color:#002147;
+}
+
+.stat-box p{
+    margin-top:10px;
+    color:#555;
+}
+
+/* Notice Section */
+
+.notice-section{
+    width:90%;
+    margin:30px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+}
+
+.notice-card{
+    background:#fff8e1;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 0 12px rgba(0,0,0,0.12);
+    border-left:6px solid #f9a825;
+}
+
+.notice-card h2{
+    color:#002147;
+    margin-bottom:10px;
+}
+
+.notice-card p{
+    line-height:1.6;
+}
+
+.whatsapp-btn{
+    display:inline-block;
+    margin-top:15px;
+    background:#25D366;
+    color:white;
+    text-decoration:none;
+    padding:10px 15px;
+    border-radius:8px;
+    transition:0.3s;
+}
+
+.whatsapp-btn:hover{
+    background:#1ebc59;
+}
+
+/* Search Section */
+
+.search-section{
+    width:85%;
+    max-width:700px;
+    margin:30px auto;
+}
+
+#searchBox{
+    width:100%;
+}
+
+.filter-buttons{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:15px;
+}
+
+.filter-buttons button{
+    min-width:100px;
+}
+
+/* Items Section */
+
+.center{
+    text-align:center;
+    margin:25px;
+    color:#002147;
+}
+
+#itemsContainer{
+    width:90%;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:22px;
+    margin-bottom:40px;
+}
+
+.card{
+    background:white;
+    padding:18px;
+    border-radius:15px;
+    box-shadow:0 0 12px rgba(0,0,0,0.12);
+}
+
+.card h3{
+    color:#002147;
+    margin-bottom:10px;
+}
+
+.card p{
+    margin:7px 0;
+}
+
+/* Status Colors */
+
+.lost{
+    border-left:7px solid #e53935;
+}
+
+.found{
+    border-left:7px solid #43a047;
+}
+
+.returned{
+    border-left:7px solid #1e88e5;
+}
+
+.deleteBtn{
+    background:#d32f2f;
+    margin-top:12px;
+}
+
+.deleteBtn:hover{
+    background:#b71c1c;
+}
+
+/* Footer */
+
+footer{
+    background:#111820;
+    color:#e8f3ff;
+    margin-top:40px;
+}
+
+.footer-container{
+    width:90%;
+    margin:auto;
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+    gap:30px;
+    padding:50px 0;
+}
+
+.footer-box h3{
+    color:#b8e7ff;
+    margin-bottom:15px;
+}
+
+.footer-box p,
+.footer-box li{
+    color:#dcecff;
+    line-height:1.8;
+}
+
+.footer-box ul{
+    list-style:none;
+}
+
+.developer-card{
+    background:#1c2733;
+    padding:20px;
+    border-radius:12px;
+    border-left:5px solid #64b5f6;
+}
+
+.footer-bottom{
+    background:#07111f;
+    text-align:center;
+    padding:15px;
+}
+
+.footer-bottom p{
+    margin:5px 0;
+    color:#b8e7ff;
+}
+
+/* Back To Top Button */
+
+#topBtn{
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    border:none;
+    background:#1565c0;
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+    display:none;
+}
+
+#topBtn:hover{
+    background:#0d47a1;
+}
+
+/* Responsive Design */
+
+@media(max-width:768px){
+
+    .hero h2{
+        font-size:28px;
+    }
+
+    header h1{
+        font-size:25px;
+    }
+
+    .form-section{
+        width:92%;
+    }
+
+    .footer-container{
+        text-align:center;
+    }
+
+}
+
+.social-link{
+    display:inline-block;
+    margin-top:10px;
+    padding:8px 15px;
+    background:#1565c0;
+    color:white;
+    text-decoration:none;
+    border-radius:6px;
+    transition:0.3s;
+}
+
+.social-link:hover{
+    background:#0d47a1;
+}

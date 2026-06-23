@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABES Lost & Found Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>ABES Engineering College</h1>
+    <p>Campus Lost & Found Portal</p>
+</header>
+
+<section class="hero">
+    <h2>Lost Something? Found Something?</h2>
+    <p>Help ABES students recover their belongings quickly and safely.</p>
+</section>
+
+<section class="form-section">
+    <h2>Report Item</h2>
+
+    <form id="itemForm">
+        <input type="text" id="itemName" placeholder="Item Name" required>
+
+        <select id="itemType">
+            <option value="Lost">Lost</option>
+            <option value="Found">Found</option>
+            <option value="Returned">Returned</option>
+        </select>
+
+        <select id="category" required>
+            <option value="">Select Category</option>
+            <option value="ID Card">ID Card</option>
+            <option value="Wallet">Wallet</option>
+            <option value="Mobile">Mobile</option>
+            <option value="Bag">Bag</option>
+            <option value="Keys">Keys</option>
+            <option value="Books">Books</option>
+            <option value="Others">Others</option>
+        </select>
+
+        <input type="text" id="location" placeholder="Location Found/Lost" required>
+        <input type="text" id="contact" placeholder="Contact Number" required>
+
+        <textarea id="description" placeholder="Short Description"></textarea>
+
+        <button type="submit">Submit Report</button>
+    </form>
+</section>
+
+<section class="stats-section">
+    <div class="stat-box">
+        <h3 id="lostCount">0</h3>
+        <p>Lost Items Reported</p>
+    </div>
+
+    <div class="stat-box">
+        <h3 id="foundCount">0</h3>
+        <p>Found Items Reported</p>
+    </div>
+
+    <div class="stat-box">
+        <h3 id="returnedCount">0</h3>
+        <p>Successfully Returned</p>
+    </div>
+</section>
+
+<section class="notice-section">
+    <div class="notice-card">
+        <h2>Important Notice</h2>
+        <p>
+            Please submit found items to the Student Affairs Office before reporting them on the portal.
+        </p>
+    </div>
+
+    <div class="notice-card">
+        <h2>Student Help Desk</h2>
+        <p><strong>Phone:</strong> +91 9899756207</p>
+        <p><strong>Email:</strong> support@abes.ac.in</p>
+
+        <a class="whatsapp-btn" href="https://wa.me/919899756207" target="_blank">
+            Chat on WhatsApp
+        </a>
+    </div>
+</section>
+
+<section class="search-section">
+    <input type="text" id="searchBox" placeholder="Search Item">
+
+    <div class="filter-buttons">
+        <button onclick="filterItems('All')">All</button>
+        <button onclick="filterItems('Lost')">Lost</button>
+        <button onclick="filterItems('Found')">Found</button>
+        <button onclick="filterItems('Returned')">Returned</button>
+    </div>
+</section>
+
+<section>
+    <h2 class="center">Reported Items</h2>
+    <div id="itemsContainer"></div>
+</section>
+
+<footer>
+    <div class="footer-container">
+
+        <div class="footer-box">
+            <h3>ABES Lost & Found Portal</h3>
+            <p>
+                Helping ABES Engineering College students recover lost belongings quickly and efficiently.
+            </p>
+        </div>
+
+        <div class="footer-box">
+            <h3>Quick Links</h3>
+            <ul>
+                <li>Home</li>
+                <li>Report Item</li>
+                <li>Lost Items</li>
+                <li>Found Items</li>
+                <li>Contact</li>
+            </ul>
+        </div>
+
+        <div class="footer-box">
+            <h3>Campus Information</h3>
+            <p>ABES Engineering College</p>
+            <p>Ghaziabad</p>
+            <p>Affiliated to AKTU</p>
+        </div>
+
+        <div class="footer-box developer-card">
+
+    <h3>Developer</h3>
+
+    <p><strong>Alok Sharan</strong></p>
+
+    <p>B.Tech CSE (1st Year)</p>
+
+    <a href="https://wa.me/919899756207"
+       target="_blank"
+       class="social-link">
+       WhatsApp
+    </a>
+
+    <br>
+
+    <a href="https://www.linkedin.com/in/alok-sharan-096ab4404?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+       target="_blank"
+       class="social-link">
+       LinkedIn
+    </a>
+
+    <p>
+        This project was developed as part of
+        Web Development Practical using
+        HTML, CSS and JavaScript.
+    </p>
+
+</div>
+
+    </div>
+
+    <div class="footer-bottom">
+        <p id="date"></p>
+        <p>© 2026 ABES Lost & Found Portal | Made for Web Development Practical Project</p>
+    </div>
+</footer>
+
+<div class="top-bar">
+    📢 Important Notice:
+    Please submit found items to the Student Affairs Office.
+</div>
+
+<button id="topBtn" onclick="scrollToTop()">↑</button>
+
+<script src="script.js"></script>
+</body>
+</html>
